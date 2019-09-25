@@ -37,6 +37,7 @@ import com.zhihu.matisse.engine.impl.PicassoEngine;
 import com.zhihu.matisse.filter.Filter;
 import com.zhihu.matisse.internal.entity.CaptureStrategy;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Observer;
@@ -47,6 +48,8 @@ public class SampleActivity extends AppCompatActivity implements View.OnClickLis
     private static final int REQUEST_CODE_CHOOSE = 23;
 
     private UriAdapter mAdapter;
+
+    private List<String> savedFiles = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +82,7 @@ public class SampleActivity extends AppCompatActivity implements View.OnClickLis
                                             .choose(MimeType.ofAll(), false)
                                             .countable(true)
                                             .capture(true)
+                                            .preselectedItems(savedFiles)
                                             .captureStrategy(
                                                     new CaptureStrategy(true, "com.zhihu.matisse.sample.fileprovider"))
                                             .maxSelectable(9)
@@ -94,6 +98,7 @@ public class SampleActivity extends AppCompatActivity implements View.OnClickLis
                                     Matisse.from(SampleActivity.this)
                                             .choose(MimeType.ofImage())
                                             .theme(R.style.Matisse_Dracula)
+                                            .preselectedItems(savedFiles)
                                             .countable(false)
                                             .maxSelectable(9)
                                             .imageEngine(new PicassoEngine())
@@ -124,6 +129,7 @@ public class SampleActivity extends AppCompatActivity implements View.OnClickLis
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE_CHOOSE && resultCode == RESULT_OK) {
             mAdapter.setData(Matisse.obtainResult(data), Matisse.obtainPathResult(data));
+            savedFiles = Matisse.obtainPathResult(data);
         }
     }
 

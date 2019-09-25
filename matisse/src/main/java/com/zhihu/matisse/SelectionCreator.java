@@ -34,6 +34,7 @@ import com.zhihu.matisse.ui.MatisseActivity;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_BEHIND;
@@ -278,6 +279,17 @@ public final class SelectionCreator {
      */
     public SelectionCreator imageEngine(ImageEngine imageEngine) {
         mSelectionSpec.imageEngine = imageEngine;
+        return this;
+    }
+
+    /**
+     * Provide a list of file paths to be already selected.
+     *
+     * @param files {@link List<String>}
+     * @return {@link SelectionCreator} for fluent API.
+     */
+    public SelectionCreator preselectedItems(List<String> files) {
+        mSelectionSpec.preselectedItems = files;
         return this;
     }
 

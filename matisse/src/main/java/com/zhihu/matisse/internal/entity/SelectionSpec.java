@@ -41,6 +41,7 @@ public final class SelectionSpec {
     public int maxImageSelectable;
     public int maxVideoSelectable;
     public List<Filter> filters;
+    public List<String> preselectedItems;
     public boolean capture;
     public CaptureStrategy captureStrategy;
     public int spanCount;
@@ -72,6 +73,7 @@ public final class SelectionSpec {
         maxImageSelectable = 0;
         maxVideoSelectable = 0;
         filters = null;
+        preselectedItems = null;
         capture = false;
         captureStrategy = null;
         spanCount = 3;

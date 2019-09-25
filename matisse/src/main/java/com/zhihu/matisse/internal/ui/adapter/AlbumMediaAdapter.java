@@ -30,12 +30,15 @@ import android.widget.TextView;
 
 import com.zhihu.matisse.R;
 import com.zhihu.matisse.internal.entity.Album;
+import com.zhihu.matisse.internal.entity.IncapableCause;
 import com.zhihu.matisse.internal.entity.Item;
 import com.zhihu.matisse.internal.entity.SelectionSpec;
-import com.zhihu.matisse.internal.entity.IncapableCause;
 import com.zhihu.matisse.internal.model.SelectedItemCollection;
 import com.zhihu.matisse.internal.ui.widget.CheckView;
 import com.zhihu.matisse.internal.ui.widget.MediaGrid;
+import com.zhihu.matisse.internal.utils.PathUtils;
+
+import java.util.List;
 
 public class AlbumMediaAdapter extends
         RecyclerViewCursorAdapter<RecyclerView.ViewHolder> implements
@@ -45,17 +48,20 @@ public class AlbumMediaAdapter extends
     private static final int VIEW_TYPE_MEDIA = 0x02;
     private final SelectedItemCollection mSelectedCollection;
     private final Drawable mPlaceholder;
+    private final List<String> preselectedItems;
     private SelectionSpec mSelectionSpec;
     private CheckStateListener mCheckStateListener;
     private OnMediaClickListener mOnMediaClickListener;
     private RecyclerView mRecyclerView;
     private int mImageResize;
+    private Context context;
 
     public AlbumMediaAdapter(Context context, SelectedItemCollection selectedCollection, RecyclerView recyclerView) {
         super(null);
+        this.context = context;
         mSelectionSpec = SelectionSpec.getInstance();
         mSelectedCollection = selectedCollection;
-
+        this.preselectedItems = mSelectionSpec.preselectedItems;
         TypedArray ta = context.getTheme().obtainStyledAttributes(new int[]{R.attr.item_placeholder});
         mPlaceholder = ta.getDrawable(0);
         ta.recycle();
@@ -121,6 +127,11 @@ public class AlbumMediaAdapter extends
             ));
             mediaViewHolder.mMediaGrid.bindMedia(item);
             mediaViewHolder.mMediaGrid.setOnMediaGridClickListener(this);
+
+            if (preselectedItems != null && preselectedItems.contains(PathUtils.getPath(context, item.uri))) {
+                mSelectedCollection.add(item);
+            }
+
             setCheckStatus(item, mediaViewHolder.mMediaGrid);
         }
     }
@@ -175,11 +186,19 @@ public class AlbumMediaAdapter extends
                 }
             } else {
                 mSelectedCollection.remove(item);
+
+                if (preselectedItems.contains(PathUtils.getPath(context, item.uri)))
+                    preselectedItems.remove(preselectedItems.indexOf(PathUtils.getPath(context, item.uri)));
+
                 notifyCheckStateChanged();
             }
         } else {
             if (mSelectedCollection.isSelected(item)) {
                 mSelectedCollection.remove(item);
+
+                if (preselectedItems.contains(PathUtils.getPath(context, item.uri)))
+                    preselectedItems.remove(preselectedItems.indexOf(PathUtils.getPath(context, item.uri)));
+
                 notifyCheckStateChanged();
             } else {
                 if (assertAddSelection(holder.itemView.getContext(), item)) {
